@@ -12,16 +12,22 @@ const publicDirectoryPath = path.join(__dirname, '../public')
 
 app.use(express.static(publicDirectoryPath))
 
-let count =0;
-
 //to recieve event we use io.on()
+// connection is a built in event
 io.on('connection', (socket) => {
     console.log('new socket conection')
-    //emit is to send a event
-    socket.emit('countUpdated',count)
-    socket.on('increment',()=>{
-        count++
-        io.emit('countUpdated',count)
+
+    socket.emit('message','Welcome!')
+    //broadcast is used to send message to others except the user
+    socket.broadcast.emit('message','A new user has joined')
+    
+    socket.on('sendmessage',(message)=>{
+        io.emit('message',message)
+    })
+
+    //disconnect is a buit in event
+    socket.on('disconnect',()=>{
+        io.emit('message','A user has left!!')
     })
 })
 
