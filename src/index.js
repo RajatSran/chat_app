@@ -17,17 +17,21 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection', (socket) => {
     console.log('new socket conection')
 
-    socket.emit('message','Welcome!')
+    socket.emit('message', 'Welcome!')
     //broadcast is used to send message to others except the user
-    socket.broadcast.emit('message','A new user has joined')
-    
-    socket.on('sendmessage',(message)=>{
-        io.emit('message',message)
+    socket.broadcast.emit('message', 'A new user has joined')
+
+    socket.on('sendmessage', (message) => {
+        io.emit('message', message)
+    })
+
+    socket.on('sendLocation', (coords) => {
+        io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
     })
 
     //disconnect is a buit in event
-    socket.on('disconnect',()=>{
-        io.emit('message','A user has left!!')
+    socket.on('disconnect', () => {
+        io.emit('message', 'A user has left!!')
     })
 })
 
