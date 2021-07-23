@@ -7,15 +7,17 @@ socket.on('message', (message) => {
 document.querySelector('#message-form').addEventListener('submit', (e) => {
     e.preventDefault()
     const message = e.target.elements.message.value
-    socket.emit('sendmessage', message)
+    socket.emit('sendmessage', message, (message) => {
+        console.log('this message was delivered!! ', message)
+    })
 })
 
-document.querySelector('#send-location').addEventListener('click',()=>{
-    if(!navigator.geolocation){
+document.querySelector('#send-location').addEventListener('click', () => {
+    if (!navigator.geolocation) {
         return alert('geo location is not suppported')
     }
-    navigator.geolocation.getCurrentPosition((position)=>{
-        socket.emit('sendLocation',{
+    navigator.geolocation.getCurrentPosition((position) => {
+        socket.emit('sendLocation', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         })
