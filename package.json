@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/RajatSran/chat_app#readme",
   "dependencies": {
+    "bad-words": "^3.0.4",
     "express": "^4.17.1",
     "nodemon": "^2.0.12",
     "socket.io": "^4.1.3"
