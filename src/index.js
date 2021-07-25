@@ -16,14 +16,12 @@ app.use(express.static(publicDirectoryPath))
 // connection is a built in event
 io.on('connection', (socket) => {
     console.log('new socket conection')
-
     socket.emit('message', 'Welcome!')
     socket.broadcast.emit('message', 'A new user has joined')//broadcast is used to send message to others except the user
 
     socket.on('sendmessage', (message, callback) => {
         const filter = new Filter()
         if(filter.isProfane(message)){
-            // return callback('profanity is not allowed!')
             message = filter.clean(message)
         }
         io.emit('message', message)
@@ -31,9 +29,10 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sendLocation', (position,callback) => {
-        io.emit('message', `https://google.com/maps?q=${position.latitude},${position.longitude}`)
+        io.emit('locationMessage', `https://google.com/maps?q=${position.latitude},${position.longitude}`)
         callback()
     })
+
     //disconnect is a buit in event
     socket.on('disconnect', () => {
         io.emit('message', 'A user has left!!')
