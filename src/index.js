@@ -3,6 +3,7 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
+const { generateMessage } = require('./utils/messages')
 
 const app = express()
 const server = http.createServer(app)
@@ -16,15 +17,16 @@ app.use(express.static(publicDirectoryPath))
 // connection is a built in event
 io.on('connection', (socket) => {
     console.log('new socket conection')
-    socket.emit('message', 'Welcome!')
-    socket.broadcast.emit('message', 'A new user has joined')//broadcast is used to send message to others except the user
+    socket.emit('message',generateMessage('Welcome!'))
+
+    socket.broadcast.emit('message', generateMessage('A new user has joined'))//broadcast is used to send message to others except the user
 
     socket.on('sendmessage', (message, callback) => {
         const filter = new Filter()
         if(filter.isProfane(message)){
             message = filter.clean(message)
         }
-        io.emit('message', message)
+        io.emit('message', generateMessage(message))
         callback('Delivered!')
     })
 
@@ -35,7 +37,7 @@ io.on('connection', (socket) => {
 
     //disconnect is a buit in event
     socket.on('disconnect', () => {
-        io.emit('message', 'A user has left!!')
+        io.emit('message', generateMessage('A user has left!!'))
     })
 
 })
