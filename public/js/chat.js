@@ -11,19 +11,23 @@ const $messages = document.querySelector('#messages')
 const messageTemplate = document.querySelector('#message-template').innerHTML
 const locationTemplate = document.querySelector('#location-message-template').innerHTML
 
+//options
+const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
+
 socket.on('message', (message) => {
     console.log(message)
-    const html = Mustache.render(messageTemplate,{
+    const html = Mustache.render(messageTemplate, {
         message: message.text,
         createdAt: moment(message.createdAt).format('h:mm a')
     })
-    $messages.insertAdjacentHTML('beforeend',html)
+    $messages.insertAdjacentHTML('beforeend', html)
 })
 
-socket.on('locationMessage',(url)=>{
-    console.log(url)
-    const html = Mustache.render(locationTemplate,{
-        url:url
+socket.on('locationMessage', (message) => {
+    console.log(message)
+    const html = Mustache.render(locationTemplate, {
+        message: message.url,
+        createdAt: moment(message.createdAt).format('h:mm a')
     })
     $messages.insertAdjacentHTML('beforeend', html)
 })
@@ -51,9 +55,9 @@ $sendlocation.addEventListener('click', () => {
         return alert('geo location is not suppported')
     }
     //disable
-    $sendlocation.setAttribute('disabled','disabled')
+    $sendlocation.setAttribute('disabled', 'disabled')
     navigator.geolocation.getCurrentPosition((position) => {
-        
+
         socket.emit('sendLocation', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
@@ -64,3 +68,5 @@ $sendlocation.addEventListener('click', () => {
         })
     })
 })
+
+socket.emit('join', { username, room })
