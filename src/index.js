@@ -19,41 +19,42 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection', (socket) => {
     console.log('new socket conection')
 
-    socket.on('join', ({ username, room }, callback ) => {
+    socket.on('join', ({ username, room }, callback) => {
         const { error, user } = addUser({ id: socket.id, username, room })
 
-        if(error){
+        if (error) {
             return callback(error)
         }
 
         socket.join(user.room)
-        socket.emit('message', generateMessage('Welcome!'))
+        socket.emit('message', generateMessage('Admin', 'Welcome!'))
         socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined`))
         callback()
     })
 
 
-
     socket.on('sendmessage', (message, callback) => {
+        const user = getUser(socket.id)
         const filter = new Filter()
         if (filter.isProfane(message)) {
             message = filter.clean(message)
         }
         //.to will send to a particular room
-        io.to('centre city').emit('message', generateMessage(message))
-        callback('Delivered!')
+        io.to(user.room).emit('message', generateMessage(user.username, message))
+        callback()
     })
 
     socket.on('sendLocation', (position, callback) => {
-        io.emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${position.latitude},${position.longitude}`))
+        const user = getUser(socket.id)
+        io.to(user.room).emit('locationMessage', generateLocationMessage(user.username, `https://google.com/maps?q=${position.latitude},${position.longitude}`))
         callback()
     })
 
     //disconnect is a buit in event
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)
-        if(user){
-            io.to(user.room).emit('message', generateMessage(`A ${user.username} has left!!`))
+        if (user) {
+            io.to(user.room).emit('message', generateMessage('Admin',`A ${user.username} has left!!`))
         }
     })
 
