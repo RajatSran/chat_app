@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000
 const publicDirectoryPath = path.join(__dirname, '../public')
 
 app.use(express.static(publicDirectoryPath))
-//to recieve event we use io.on()
+//to recieve event we use io.on() to send we use io.emit()
 // connection is a built in event
 io.on('connection', (socket) => {
     console.log('new socket conection')

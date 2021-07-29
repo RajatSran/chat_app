@@ -4,8 +4,9 @@ const users = []
 
 const addUser = ({ id, username, room }) => {
     //clean the data
-    username = username.trim().toLowerCase()
-    room = room.trim().toLowerCase()
+
+    // username = username.trim().toLowerCase()
+    // room = room.trim().toLowerCase()
 
     //Validate the data
     if (!username || !room) {
@@ -50,7 +51,7 @@ const getUsersInRoom = (room) => {
     return users.filter((user) => user.room === room)
 }
 
-module.exports  = {
+module.exports = {
     addUser,
     removeUser,
     getUser,
